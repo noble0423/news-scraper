@@ -52,7 +52,7 @@ app.get("/scrape", function(req, res) {
         // Then we load that into Cheerio and save it to $ for a shorthand selector
         var $ = cheerio.load(response.data);
 
-        // Now, we grab every and do the following:
+        // Now, we grab every .full-time and do the following:
         $(".full-item ").each(function(i, element) {
             // Save an empty result object
             var result = {};
@@ -77,28 +77,41 @@ app.get("/scrape", function(req, res) {
                 .text()
                 .replace("\n\t\t\n\t\t", "")
                 .replace("\n\t", "");
-            // result.briefDesc = $(this)
-            //     .children(".full-item-content")
-            //     .children(".full-item-dek item-dek")
-            //     // .children("p")
-            //     .text();
+            // result.publishTime = $(this)
+            //     .children(".full-item-metadata")
+            //     .children("div")
+            //     .attr("data-publish-date")
+            //     .format("DD-MM-YYYY");
+            //     .text()
+            //     .replace()
 
             console.log(result);
             // Create a new Article using the `result` object built from scraping
-            // db.Article.create(result)
-            //     .then(function(dbArticle) {
-            //         // View the added result in the console
-            //         console.log(dbArticle);
-            //     })
-            //     .catch(function(err) {
-            //         // If an error occurred, send it to the client
-            //         return res.json(err);
-            //     });
+            db.Article.create(result)
+                .then(function(dbArticle) {
+                    // View the added result in the console
+                    console.log(dbArticle);
+                })
+                .catch(function(err) {
+                    // If an error occurred, send it to the client
+                    return res.json(err);
+                });
         });
 
         // If we were able to successfully scrape and save an Article, send a message to the client
         res.send("Scrape Complete");
     });
+});
+
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+    db.Article.find().sort({ publishDate: 1 })
+        .then(function(dbArticle) {
+            res.json(dbArticle)
+        })
+        .catch(function(err) {
+            res.json(err);
+        });
 });
 
 
