@@ -1,4 +1,5 @@
 var express = require("express");
+var exphbs = require("express-handlebars");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -7,13 +8,17 @@ var mongoose = require("mongoose");
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-// Require all models
-var db = require("./models");
+// Initialize Express
+var app = express();
 
 var PORT = 3000;
 
-// Initialize Express
-var app = express();
+// Set Handlebars.
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
+// Require all models
+var db = require("./models");
 
 // Use morgan logger for logging requests
 app.use(logger("dev"));
@@ -26,12 +31,6 @@ app.use(express.static("public"));
 
 // parse application/json
 app.use(bodyParser.json());
-
-// Set Handlebars.
-var exphbs = require("express-handlebars");
-
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
