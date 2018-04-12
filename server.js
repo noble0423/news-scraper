@@ -2,6 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+var path = require("path");
 
 // Our scraping tools
 var axios = require("axios");
@@ -41,7 +42,7 @@ var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI, {
-    useMongoClient: true
+    // useMongoClient: true
 });
 
 // Routes
@@ -95,12 +96,22 @@ app.get("/scrape", function(req, res) {
                 })
                 .catch(function(err) {
                     // If an error occurred, send it to the client
+                    console.log("error");
                     return res.json(err);
                 });
         });
 
         // If we were able to successfully scrape and save an Article, send a message to the client
-        res.send("Scrape Complete");
+        // res.end();
+        // app.get("*", function(req, res) {
+            // res.sendFile(path.join(__dirname, "/public/index.html"));
+        // });
+        // alert("All new articles have been added!");
+        // res.sendFile(path.join(__dirname, "/public/index.html"));
+        res.send(`Scrape Complete <button id='home-btn'>Home</button>`);
+        // $("#home-btn").click(function() {
+        //     console.log("clicked");
+        // });
     });
 });
 
@@ -109,6 +120,17 @@ app.get("/articles", function(req, res) {
     db.Article.find().sort({ publishDate: 1 })
         .then(function(dbArticle) {
             res.json(dbArticle)
+        })
+        .catch(function(err) {
+            res.json(err);
+        });
+});
+
+// Route for getting all notes from the db
+app.get("/notes", function(req, res) {
+    db.Note.find({})
+        .then(function(dbNote) {
+            res.json(dbNote);
         })
         .catch(function(err) {
             res.json(err);
@@ -133,7 +155,8 @@ app.get("/articles/:id", function(req, res) {
 app.post("/articles/:id", function(req, res) {
     db.Note.create(req.body)
         .then(function(dbNote) {
-            return db.Article.findOneAndUpdate({ _id : req.params.id }, { note : dbNote._id}, { new : true });
+            // return db.Article.findOneAndUpdate({ _id : req.params.id }, { note : dbNote._id}, { new : true });
+            return db.Article.findOneAndUpdate({}, { $push : { note: dbNote._id } }, { new : true });
         })
         .then(function(dbArticle) {
             res.json(dnArticle);

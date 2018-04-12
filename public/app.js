@@ -5,6 +5,19 @@ $.getJSON("/articles", function(data) {
     }
 });
 
+// Home button (after scrape)
+$(document).on("click", "#home-btn", function() {
+    console.log("clicked");
+});
+// $(document).ready(function() {
+//     $("#home-btn").click(function() {
+//         console.log("clicked");
+//     });
+// });
+// $("#home-btn").click(function() {
+//     console.log("clicked");
+// });
+
 // Whenever someone clicks on div.individual-article
 $(document).on("click", ".individual-article", function() {
     // console.log("clicked");
