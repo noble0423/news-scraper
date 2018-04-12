@@ -1,7 +1,7 @@
 // Grabs the articles as JSON 
 $.getJSON("/articles", function(data) {
     for (let i = 0; i < data.length; i++) {
-        $("#all-articles").append(`<br><div class='individual-article'><div data-id= ${ data[i]._id } > ${ data[i].title } <br /> ${ data[i].link } <br /> ${ data[i].image } <br /> ${ data[i].publishDate } </div></div>`);
+        $("#all-articles").append(`<br><div class='individual-article'><div data-id=${ data[i]._id } > ${ data[i].title } <br /> ${ data[i].link } <br /> ${ data[i].image } <br /> ${ data[i].publishDate } <br /> ${ data[i].note } </div></div>`);
     }
 });
 
@@ -39,7 +39,9 @@ $(document).on("click", ".individual-article", function() {
                 .append(`<h2> ${ data.title } </h2>`)
                 .append(`<input id='title-input' name='title' >`)
                 .append(`<textarea id='body-input' name='body' ><textarea>`)
-                .append(`<button data-id=' ${ data._id } ' id='save-note'>Save Note</button>`);
+                .append(`<button data-id='${ data._id } ' id='save-note'>Save Note</button>`)
+                .append(`<button data-id='${ data._id } ' id='update-note'>Update Note</button>`)
+                .append(`<button data-id='${ data._id } ' id='delete-note'>Delete Note</button>`);
             
             // If there is a note in the article
             if (data.note) {
