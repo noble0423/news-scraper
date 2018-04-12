@@ -10,7 +10,7 @@ var cheerio = require("cheerio");
 // Initialize Express
 var app = express();
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Set Handlebars.
 var exphbs = require("express-handlebars");
