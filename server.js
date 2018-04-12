@@ -1,5 +1,4 @@
 var express = require("express");
-var exphbs = require("express-handlebars");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -14,6 +13,8 @@ var app = express();
 var PORT = 3000;
 
 // Set Handlebars.
+var exphbs = require("express-handlebars");
+
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
@@ -44,6 +45,7 @@ mongoose.connect(MONGODB_URI, {
 });
 
 // Routes
+
 // A GET route for scraping the Popular Mechanics website
 app.get("/scrape", function(req, res) {
     // First, we grab th body of the html with axios
@@ -113,6 +115,13 @@ app.get("/articles", function(req, res) {
         });
 });
 
+// HANDLEBARS?
+// app.get("/", function(req, res) {
+//     db.Article.find().sort({ publishDate: 1 })
+//         .then(function(dbArticle) {
+//             res.render("index", dbArticle)
+//         })
+//     });
 
 
 
