@@ -46,6 +46,12 @@ mongoose.connect(MONGODB_URI, {
 });
 
 // Routes
+// directing to home route
+// app.get("/", function(req, res) {
+//     res.sendFile(path.join(__dirname, "index.html"));
+//   });
+// app.get("*", function(req, res) {
+//     res.sendFile(path.join(__dirname, "/public/index.html"));
 
 // A GET route for scraping the Popular Mechanics website
 app.get("/scrape", function(req, res) {
@@ -115,9 +121,9 @@ app.get("/scrape", function(req, res) {
     });
 });
 
-// Route for getting all Articles from the db
+// Route for getting all Articles from the db (want this to sort from newest publish date to oldest--right now though, this data is a string, so it is not sorting correctly--although it appears is if it is, but that is only a coincedence b/c of the current data's dates)
 app.get("/articles", function(req, res) {
-    db.Article.find().sort({ publishDate: 1 })
+    db.Article.find().sort({ publishDate: -1 })
         .then(function(dbArticle) {
             res.json(dbArticle)
         })
@@ -143,7 +149,24 @@ app.get("/articles/:id", function(req, res) {
     db.Article.findOne({ _id : req.params.id })
         .populate("note")
         .then(function(dbArticle) {
+            // console.log("dbArticle after" + dbArticle);
             // If we were able to successfully find an Article with the given id, send it back to the client
+            res.json(dbArticle);
+            // console.log("dbArticle from app.get-server.js line 141" + dbArticle);
+        })
+        .catch(function(err) {
+            res.json(err);
+        });
+});
+
+// Route to save a new note 
+app.post("/articles/:id", function(req, res) {
+    console.log(req.body);
+    db.Note.create(req.body)
+        .then(function(dbNote) {
+            return db.Article.findOneAndUpdate({ _id : req.params.id }, { note : dbNote._id}, { new : true });
+        })
+        .then(function(dbArticle) {
             res.json(dbArticle);
         })
         .catch(function(err) {
@@ -151,20 +174,36 @@ app.get("/articles/:id", function(req, res) {
         });
 });
 
-// Route to save/update an Article's note
-app.post("/articles/:id", function(req, res) {
-    db.Note.create(req.body)
+// Route to update an Article's note (note is being updated in DB correctly, but it is not being transferred correctly to the front end)
+app.put("/articles/:id", function(req, res) {
+    console.log("req.body" + req.body);
+    db.Note.update(req.body)
         .then(function(dbNote) {
             return db.Article.findOneAndUpdate({ _id : req.params.id }, { note : dbNote._id}, { new : true });
-            // return db.Article.findOneAndUpdate({}, { $push : { note: dbNote._id } }, { new : true });
         })
         .then(function(dbArticle) {
-            res.json(dnArticle);
+            res.json(dbArticle);
         })
         .catch(function(err) {
             res.json(err);
         });
 });
+
+// Route to delete an Article's note
+app.delete("/articles/:id", function(req, res) {
+    console.log(req.body);
+    db.Note.update(req.body)
+        .then(function(dbNote) {
+            return db.Article.findOneAndRemove({ _id : req.params.id }, { note : dbNote._id}, { new : true });
+        })
+        .then(function(dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function(err) {
+            res.json(err);
+        });
+});
+
 
 // HANDLEBARS?
 // app.get("/", function(req, res) {
